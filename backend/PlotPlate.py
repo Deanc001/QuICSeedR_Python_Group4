@@ -1,29 +1,26 @@
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
-def PlotPlate (raw, plate_time, plate_format = 96, f_size = 5, fill = False):
-
+def plot_plate(raw, plate_time, format=96, f_size=5, fill=False):
     def generate_wells(rows, cols):
         wells = []
         for r in rows:
             for c in cols:
-                wells.append(f'{r}{c}')
+                wells.append(f"{r}{c}")
         return wells
 
-    if plate_format == 96:
-        rows = list('ABCDEFGH')
-        cols = [f'{i:02}' for i in range(1, 13)]
-        n_row = 8
-        n_col = 12
-    elif plate_format == 384:
-        rows = list('ABCDEFGHIJKLMNOP')
-        cols = [f'{i:02}' for i in range(1, 25)]
-        n_row = 16
-        n_col = 24
+    if format == 96:
+        rows = [chr(i) for i in range(ord('A'), ord('H') + 1)]
+        cols = [f"{i:02}" for i in range(1, 13)]
+        n_row, n_col = 8, 12
+    elif format == 384:
+        rows = [chr(i) for i in range(ord('A'), ord('P') + 1)]
+        cols = [f"{i:02}" for i in range(1, 25)]
+        n_row, n_col = 16, 24
     else:
-        raise ValueError("Invalid format. Must be either 96 or 384")
+        raise ValueError("Invalid format. Must be either 96 or 384.")
 
     all_wells = generate_wells(rows, cols)
 
@@ -34,32 +31,34 @@ def PlotPlate (raw, plate_time, plate_format = 96, f_size = 5, fill = False):
 
     well_order = list(raw.columns[:2]) + all_wells
     raw = raw[well_order]
-
     rawplot = raw.iloc[1:, 2:]
-    vectors_long = np.repeat(rawplot.columns, repeats=len(rawplot))
+    rawplot.insert(0, "Time", plate_time.iloc[:, 0])
+    rawplot = rawplot.apply(pd.to_numeric, errors='coerce')
+    long_data = pd.melt(rawplot, id_vars="Time", var_name="Well", value_name="Fluorescence")
+    long_data["Fluorescence"] = pd.to_numeric(long_data["Fluorescence"])
+    global_max = long_data["Fluorescence"].max(skipna=True) / 0.8
 
-    rawplot.insert(0, 'Time', plate_time['Time'])
-    rawplot.columns.values[0] = "Time"
-    rawplot = rawplot.apply(pd.to_numeric)
+    fig = plt.figure(figsize=(12, 8))
+    gs = plt.GridSpec(n_row, n_col, figure=fig, wspace=0.05, hspace=0.35)
 
-    long_data = pd.melt(rawplot, id_vars=['Time'], var_name='Variable', value_name='Value')
-    long_data['Variable'] = vectors_long
-    long_data['Value'] = pd.to_numeric(long_data['Value'], errors='coerce')
+    for i, well in enumerate(all_wells):
+        row, col = divmod(i, n_col)
+        ax = fig.add_subplot(gs[row, col])
 
-    global_max = long_data['Value'].max(skipna=True) / 0.8
+        well_data = long_data[long_data["Well"] == well]
+        sns.lineplot(x="Time", y="Fluorescence", data=well_data, ax=ax, color="black", linewidth=0.8)
 
-    plt.figure(figsize=(n_col * 1, n_row * 1.5))
-    for idx, (well, group) in enumerate(long_data.groupby('Variable')):
-        plt.subplot(n_row, n_col, idx + 1)
-        plt.plot(group['Time'], group['Value'], color='b')
-        plt.ylim(0, global_max)
-        plt.title(well, fontsize=f_size)
-        plt.xticks([])
-        plt.yticks([])
-        plt.gca().spines['top'].set_visible(False)
-        plt.gca().spines['right'].set_visible(False)
-        plt.gca().spines['bottom'].set_visible(False)
-        plt.gca().spines['left'].set_visible(False)
-    
-    plt.tight_layout()
+        ax.set_ylim(0, global_max)
+        ax.set_title(well, fontsize=8)
+        ax.tick_params(axis="both", which="both", length=0)
+        ax.set_xticklabels([])
+        ax.set_yticklabels([])
+        ax.set_xlabel('')
+        ax.set_ylabel('')
+
+    plt.subplots_adjust(left=0.08, right=0.92, top=0.92, bottom=0.08)
+
+    fig.text(0.5, 0.04, 'Time', ha='center', fontsize=14)
+    fig.text(0.04, 0.5, 'Fluorescence', va='center', rotation='vertical', fontsize=14)
+
     plt.show()
