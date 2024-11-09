@@ -44,7 +44,7 @@ def get_calculation(raw, meta, norm=False, norm_ct=None, threshold_method="stdv"
         })
         return smoothed_slope.max(axis=0, skipna=True).values
 
-    background = raw.iloc[cycle_background, :].astype(float)
+    background = raw.iloc[cycle_background - 1, :].astype(float)
     nv = background.values
     threshold = calculate_threshold(nv, threshold_method, sd_fold, bg_fold, rfu)
     mpr = calculate_mpr(raw, background)
