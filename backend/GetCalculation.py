@@ -20,7 +20,7 @@ def get_calculation(raw, meta, norm=False, norm_ct=None, threshold_method="stdv"
             return np.mean(nv) + sd_fold * np.std(nv)
         elif method == "bg_ratio":
             return nv * bg_fold
-        else:  # method == "rfu_val"
+        else:
             return rfu
 
     def calculate_raf(raw, threshold, time_skip):
