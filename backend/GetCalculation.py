@@ -17,7 +17,9 @@ def get_calculation(raw, meta, norm=False, norm_ct=None, threshold_method="stdv"
 
     def calculate_threshold(nv, method, sd_fold, bg_fold, rfu):
         if method == "stdv":
-            return np.mean(nv) + sd_fold * np.std(nv)
+            variance = np.sum((nv - np.mean(nv)) ** 2) / (len(nv) - 1)
+            std_dev = np.sqrt(variance)
+            return np.mean(nv) + sd_fold * std_dev
         elif method == "bg_ratio":
             return nv * bg_fold
         else:
@@ -30,7 +32,8 @@ def get_calculation(raw, meta, norm=False, norm_ct=None, threshold_method="stdv"
             if len(crossing_rows) == 0:
                 time_to_threshold.append(np.nan)
             else:
-                time_to_threshold.append(int(raw.index[crossing_rows[0] + time_skip]))
+                test = float(raw.index[crossing_rows[0] + time_skip])
+                time_to_threshold.append(test)
         raf = 1 / np.array(time_to_threshold, dtype=float)
         raf[np.isinf(raf) | np.isnan(raf)] = 0
         return time_to_threshold, raf
@@ -44,7 +47,7 @@ def get_calculation(raw, meta, norm=False, norm_ct=None, threshold_method="stdv"
         })
         return smoothed_slope.max(axis=0, skipna=True).values
 
-    background = raw.iloc[cycle_background - 1, :].astype(float)
+    background = raw.iloc[cycle_background-1, :].astype(float)
     nv = background.values
     threshold = calculate_threshold(nv, threshold_method, sd_fold, bg_fold, rfu)
     mpr = calculate_mpr(raw, background)
