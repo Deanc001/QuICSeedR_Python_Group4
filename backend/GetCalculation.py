@@ -4,6 +4,9 @@ import numpy as np
 
 def get_calculation(raw, meta, norm=False, norm_ct=None, threshold_method="stdv", time_skip=5,
                     sd_fold=3, bg_fold=3, rfu=5000, cycle_background=4, binw=6):
+    
+    #Set Display Precision
+    pd.set_option("display.precision", 9)
 
     if threshold_method not in ["stdv", "bg_ratio", "rfu_val"]:
         raise ValueError("Invalid threshold_method. Use 'stdv', 'bg_ratio', or 'rfu_val'.")
