@@ -109,27 +109,28 @@ def BulkProcessing(data, do_analysis=True, params=None, verbose=False):
         'combined_result': fullresult
     }
 
-grinder_data = BulkReadMARS(path = '.././tutorials/data/grinder/', plate_subfix = 'plate', raw_subfix = 'raw')
+if __name__ == "__main__":
+    grinder_data = BulkReadMARS(path = '.././tutorials/data/grinder/', plate_subfix = 'plate', raw_subfix = 'raw')
 
-params = {
-    'CleanMeta': {
-        'split_content': True,
-        'split_into': ['dilution', 'sampleID']
-    },
-    'GetCalculation': {
-        'norm': True,
-        'norm_ct': 'pos',
-        'sd_fold': 10,
-        'cycle_background': 6
-    },
-    'GetAnalysis': {
-        'control': 'neg',
-        'alternative': 'greater'
-    },
-    'SummarizeResult': {
-        'sig_method': 'metric_count',
-        'method_threshold': 3
+    params = {
+        'CleanMeta': {
+            'split_content': True,
+            'split_into': ['dilution', 'sampleID']
+        },
+        'GetCalculation': {
+            'norm': True,
+            'norm_ct': 'pos',
+            'sd_fold': 10,
+            'cycle_background': 6
+        },
+        'GetAnalysis': {
+            'control': 'neg',
+            'alternative': 'greater'
+        },
+        'SummarizeResult': {
+            'sig_method': 'metric_count',
+            'method_threshold': 3
+        }
     }
-}
 
-results = BulkProcessing(data = grinder_data, params = params, verbose = True)
+    results = BulkProcessing(data = grinder_data, params = params, verbose = True)

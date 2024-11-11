@@ -22,8 +22,9 @@ def ConvertTime(raw):
     return time
 
 
-raw_96 = pd.read_excel('.././tutorials/data/20240716_s1_raw.xlsx')
+if __name__ == "__main__":
+    raw_96 = pd.read_excel('.././tutorials/data/20240716_s1_raw.xlsx')
 
-plate_time_96 = ConvertTime(raw_96)
+    plate_time_96 = ConvertTime(raw_96)
 
-print(plate_time_96)
+    print(plate_time_96)

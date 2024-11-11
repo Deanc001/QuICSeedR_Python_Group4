@@ -22,17 +22,18 @@ def CleanRaw(meta, raw, plate_time, cycle_total=None):
     return raw
 
 
-raw_96 = pd.read_excel('.././tutorials/data/20240716_s1_raw.xlsx')
+if __name__ == "__main__":
+    raw_96 = pd.read_excel('.././tutorials/data/20240716_s1_raw.xlsx')
 
-plate_96 = pd.read_excel('.././tutorials/data/20240716_s1_plate.xlsx')
+    plate_96 = pd.read_excel('.././tutorials/data/20240716_s1_plate.xlsx')
 
-plate_time_96 = ConvertTime(raw_96)
+    plate_time_96 = ConvertTime(raw_96)
 
-replicate_96 = GetReplicate(plate_96)
+    replicate_96 = GetReplicate(plate_96)
 
-meta_96 = CleanMeta(raw_96, plate_96, replicate_96)
+    meta_96 = CleanMeta(raw_96, plate_96, replicate_96)
 
-cleanraw_96 = CleanRaw(meta_96, raw_96, plate_time_96)
+    cleanraw_96 = CleanRaw(meta_96, raw_96, plate_time_96)
 
-print(cleanraw_96)
+    print(cleanraw_96)
 

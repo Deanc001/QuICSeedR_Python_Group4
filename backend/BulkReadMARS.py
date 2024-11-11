@@ -39,6 +39,7 @@ def BulkReadMARS(path, plate_subfix, raw_subfix, helper_func=None):
     return mylist
 
 
-grinder_data = BulkReadMARS(path = '.././tutorials/data/grinder/', plate_subfix = 'plate', raw_subfix = 'raw')
+if __name__ == "__main__":
+    grinder_data = BulkReadMARS(path = '.././tutorials/data/grinder/', plate_subfix = 'plate', raw_subfix = 'raw')
 
-print(grinder_data)
+    print(grinder_data)
