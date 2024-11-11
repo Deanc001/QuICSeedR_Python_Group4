@@ -36,11 +36,11 @@ def CleanMeta(raw, plate, replicate, split_content=False, split_by="_", split_in
         content = content[valid_well]
         replicate = replicate[valid_well]
     
-    content_replicate = np.where(
-        (pd.isna(content)) | (pd.isna(replicate)),
-        None,
-        str(content) + "_" + str(replicate)
-    )
+    vectorized_add = np.vectorize(lambda x, y: str(x) + "_" + str(int(y)))
+
+    # Apply the function to both arrays
+    content_replicate = vectorized_add(content, replicate)
+
     
     meta = pd.DataFrame({
         'well': well,
@@ -70,12 +70,14 @@ def CleanMeta(raw, plate, replicate, split_content=False, split_by="_", split_in
     return meta
 
 
-raw_96 = pd.read_excel('.././tutorials/data/20240716_s1_raw.xlsx')
 
-plate_96 = pd.read_excel('.././tutorials/data/20240716_s1_plate.xlsx')
+if __name__ == "__main__":
+    raw_96 = pd.read_excel('.././tutorials/data/20240716_s1_raw.xlsx')
 
-replicate_96 = GetReplicate(plate_96)
+    plate_96 = pd.read_excel('.././tutorials/data/20240716_s1_plate.xlsx')
 
-meta_96 = CleanMeta(raw_96, plate_96, replicate_96)
+    replicate_96 = GetReplicate(plate_96)
 
-print(meta_96)
+    meta_96 = CleanMeta(raw_96, plate_96, replicate_96)
+
+    print(meta_96)
