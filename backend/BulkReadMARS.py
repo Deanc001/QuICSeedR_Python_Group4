@@ -22,6 +22,11 @@ def BulkReadMARS(path, plate_subfix, raw_subfix, helper_func=None):
         if(len(plate_path) == 0 or len(raw_path) == 0):
             print("Skipping folder due to missing files")
             continue
+        # Replace above, checks the lengths of plate_files and raw_files since they are strings
+        #if not plate_files or not raw_files:
+        #print("Skipping folder due to missing files")
+        #continue   
+        
         
         plate_data = pd.read_excel(plate_path)
         raw_data = pd.read_excel(raw_path)
