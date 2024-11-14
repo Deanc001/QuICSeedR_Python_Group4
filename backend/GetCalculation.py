@@ -14,10 +14,12 @@ def get_calculation(raw, meta, norm=False, norm_ct=None, threshold_method="stdv"
         raise ValueError("cycle_background exceeds number of rows in raw data.")
     if norm and norm_ct is None:
         raise ValueError("norm_ct must be provided when norm is True.")
-
+    
+    #Function to calculate Maximum Production Rate (MPR)
     def calculate_mpr(raw, background):
         return raw.max(axis=0) / background
 
+    #Function to calculate threshold based on specified method
     def calculate_threshold(nv, method, sd_fold, bg_fold, rfu):
         if method == "stdv":
             variance = np.sum((nv - np.mean(nv)) ** 2) / (len(nv) - 1)
