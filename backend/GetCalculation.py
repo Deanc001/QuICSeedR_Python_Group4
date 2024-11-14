@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-def get_calculation(raw, meta, norm=False, norm_ct=None, threshold_method="stdv", time_skip=5,
+def GetCalculation(raw, meta, norm=False, norm_ct=None, threshold_method="stdv", time_skip=5,
                     sd_fold=3, bg_fold=3, rfu=5000, cycle_background=4, binw=6):
     
     #Set Display Precision
