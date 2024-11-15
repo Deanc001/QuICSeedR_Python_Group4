@@ -47,6 +47,4 @@ def BulkReadMARS(path, plate_subfix, raw_subfix, helper_func=None):
 if __name__ == "__main__":
     grinder_data = BulkReadMARS(path = '.././tutorials/data/grinder/', plate_subfix = 'plate', raw_subfix = 'raw')
 
-    # print(grinder_data)
-
-    print(grinder_data['20221110_M2']['replicate'])
+    print(grinder_data)
