@@ -1,7 +1,7 @@
 import pandas as pd
 import re
 
-def ConvertTime(raw):
+def convert_time(raw):
     #Take out time column and convert to dataframe  (change)
     time = pd.DataFrame({'time':raw.iloc[1:,1].copy()})
     time['time'] =time['time'].astype(str)  #make sure values are strings
