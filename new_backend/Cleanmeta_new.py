@@ -34,58 +34,25 @@ def clean_meta(raw, plate, replicate, split_content=False, split_by="_", split_i
         content_values = content_values[valid_mask]
         replicate_values= replicate_values[valid_mask]
 
+    #Generate `content_replicate` column
+    content_replicate_values = np.where(pd.notna(content_values) & pd.notna(replicate_values), content_values + "_" + replicate_values, None)
 
+    # Create DataFrame
+    meta = pd.DataFrame({
+        'content': content_values,
+        'replicate': replicate_values,
+        'content_replicate': content_replicate_values,
+        'format': plate_format
+    })
 
+    # Split content if needed
+    if split_content:
+        split_df = meta['content'].str.split(split_by, expand=True)
+        if split_df.shape[1] != len(split_into):
+            raise ValueError(
+                f"Number of split columns ({split_df.shape[1]}) does not match the length of 'split_into' ({len(split_into)})."
+            )
+        split_df.columns = split_into
+        meta = pd.concat([meta, split_df], axis=1)
 
-
-
-
-
-
-    n_platecol = 13 if plate.shape[1] == 13 else 25
-    plate_format = 96 if n_platecol == 13 else 384
-    replicate = replicate.iloc[:, 1:].values.flatten()
-
-    def generate_wells(rows, cols):
-        return [f"{r}{c}" for r in rows for c in cols]
-
-    if plate_format == 96:
-        rows = [chr(i) for i in range(ord('A'), ord('H') + 1)]
-        cols = [f"{i:02}" for i in range(1, 13)]
-    elif plate_format == 384:
-        rows = [chr(i) for i in range(ord('A'), ord('P') + 1)]
-        cols = [f"{i:02}" for i in range(1, 25)]
-    else:
-        raise ValueError("Invalid format. Must be either 96 or 384.")
-    well = generate_wells(rows, cols)
-
-    content = plate.iloc[:, 1:n_platecol].values.flatten()
-
-    if del_na:
-        valid_indices = ~pd.isna(replicate)
-        well = np.array(well)[valid_indices]
-        content = content[valid_indices]
-        replicate = replicate[valid_indices]
-
-        # Generate content replicate column
-        content_replicate_values = np.where(pd.notna(content_values) & pd.notna(replicate_values), content_values + "_" + replicate_values, None)
-
-        # Create DataFrame
-        meta = pd.DataFrame({
-            'content': content_values,
-            'replicate': replicate_values,
-            'content_replicate': content_replicate_values,
-            'format': plate_format
-        })
-
-        # Split content if needed
-        if split_content:
-            split_df = meta['content'].str.split(split_by, expand=True)
-            if split_df.shape[1] != len(split_into):
-                raise ValueError(
-                    f"Number of split columns ({split_df.shape[1]}) does not match the length of 'split_into' ({len(split_into)})."
-                )
-            split_df.columns = split_into
-            meta = pd.concat([meta, split_df], axis=1)
-
-        return meta
+    return meta
